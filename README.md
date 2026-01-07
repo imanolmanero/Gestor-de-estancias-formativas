@@ -1,4 +1,4 @@
-©️Egibide nos ha contratado para digitalizr el DKF
+©️ Egibide nos ha contratado para digitalizr el DKF
 
 🔜 Tenemos poco tiempo, pero sin prisa, ni pausa.
 
