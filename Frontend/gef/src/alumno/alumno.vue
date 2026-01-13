@@ -11,13 +11,9 @@ const alumno = reactive({
 })
 
 const Calendario = defineAsyncComponent(()=>import('./calendario.vue'));
-const calendario = ref(false);
 const Empresa = defineAsyncComponent(()=>import('./empresa.vue'));
-const empresa = ref(false);
 const Notas = defineAsyncComponent(()=>import('./notas.vue'));
-const notas = ref(false);
 const Seguimiento = defineAsyncComponent(()=>import('./seguimiento.vue'));
-const seguimiento = ref(false);
 
 const vistaActiva = ref(null)
 
