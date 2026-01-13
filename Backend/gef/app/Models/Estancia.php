@@ -102,4 +102,32 @@ class Estancia extends Model
         return $this->hasMany(CuadernoPracticas::class, 'id_estancia', 'id_estancia');
     }
 
+
+    //prueba
+    /**
+     * Obtiene todas las asignaturas evaluadas en esta estancia
+     */
+    public function asignaturasEvaluadas()
+    {
+        $resultadosIds = $this->notasResultadosAprendizaje()
+            ->pluck('id_resultado')
+            ->unique();
+
+        $asignaturasIds = ResultadoAprendizaje::whereIn('id_resultado', $resultadosIds)
+            ->pluck('id_asignatura')
+            ->unique();
+
+        return Asignatura::whereIn('id_asignatura', $asignaturasIds)->get();
+    }
+
+     /**
+     * Calcula la nota media de competencias transversales
+     */
+    public function notaMediaTransversales(): ?float
+    {
+        return $this->notasCompetenciasTransversales()
+            ->whereNotNull('nota')
+            ->avg('nota');
+    }
+
 }

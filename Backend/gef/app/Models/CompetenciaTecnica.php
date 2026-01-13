@@ -48,4 +48,28 @@ class CompetenciaTecnica extends Model
         return $this->hasMany(NotaResultadoAprendizaje::class, 'id_competencia', 'id_competencia');
     }
 
+
+    //Prueba
+    public function propagarNotaARAs($idEstancia, $nota): int
+    {
+        $resultados = $this->resultadosAprendizaje;
+        $actualizados = 0;
+
+        foreach ($resultados as $resultado) {
+            NotaResultadoAprendizaje::updateOrCreate(
+                [
+                    'id_estancia' => $idEstancia,
+                    'id_competencia' => $this->id_competencia,
+                    'id_resultado' => $resultado->id_resultado
+                ],
+                [
+                    'nota' => $nota
+                ]
+            );
+            $actualizados++;
+        }
+
+        return $actualizados;
+    }
+
 }
