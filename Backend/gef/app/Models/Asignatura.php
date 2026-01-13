@@ -43,4 +43,14 @@ class Asignatura extends Model
         return $this->hasMany(NotaAsignaturaCentro::class, 'id_asignatura', 'id_asignatura');
     }
 
+    //prueba
+    public function calcularNotaTecnicaEmpresa($idEstancia): ?float
+    {
+        $resultadosIds = $this->resultadosAprendizaje()->pluck('id_resultado');
+
+        return NotaResultadoAprendizaje::where('id_estancia', $idEstancia)
+            ->whereIn('id_resultado', $resultadosIds)
+            ->avg('nota');
+    }
+
 }
