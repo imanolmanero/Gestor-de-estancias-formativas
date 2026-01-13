@@ -17,7 +17,7 @@ export default {
     data() {
         return {
             email: '',
-            password: '',  // ← Cambiado de 'contraseña' a 'password'
+            password: '', 
             error: '',
         }
     },
@@ -26,10 +26,10 @@ export default {
             try {
                 const response = await axios.post('http://localhost:8000/api/login', {
                     email: this.email,
-                    password: this.password  // ← Cambiado de 'contraseña' a 'password'
+                    password: this.password  
                 })
                 
-                localStorage.setItem('token', response.data.access_token)  // ← Corregido: 'access_token' no 'acces_token'
+                localStorage.setItem('token', response.data.access_token)  
                 alert('¡Has iniciado sesión correctamente!')
                 
             } catch(err) {
