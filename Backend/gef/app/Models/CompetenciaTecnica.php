@@ -13,8 +13,8 @@ class CompetenciaTecnica extends Model
     protected $primaryKey = 'id_competencia';
 
     protected $fillable = [
+        'descripcion',
         'id_grado',
-        'descripcion'
     ];
 
     //Relaciones
