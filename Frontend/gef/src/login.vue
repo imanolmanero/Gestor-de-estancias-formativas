@@ -35,15 +35,17 @@ export default {
                     password: this.password  
                 })
                 
-                localStorage.setItem('token', response.data.access_token)
-                axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`
-                
-                alert('¡Has iniciado sesión correctamente!')
-                this.$router.push('/dashboard')
+                if (response.data.access_token) {
+                    localStorage.setItem('token', response.data.access_token)
+                    this.$router.push('/dashboard')
+                }
                 
             } catch(err) {
-                this.error = err.response?.data?.message || 'Error al iniciar sesión'
-                console.error('Error completo:', err)
+                if (err.response?.status === 401) {
+                    this.error = err.response.data.message
+                } else {
+                    this.error = 'Error al iniciar sesión'
+                }
             } finally {
                 this.loading = false
             }
@@ -110,5 +112,8 @@ button:disabled {
     text-align: center;
     margin-top: 15px;
     font-size: 14px;
+    padding: 10px;
+    background-color: #ffebee;
+    border-radius: 4px;
 }
 </style>

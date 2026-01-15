@@ -10,6 +10,7 @@ class ResultadoAprendizajeController extends Controller
 {
     
     public function store(Request $request)
+    
     {
         $request->validate([
             'descripcion' => 'required|string',

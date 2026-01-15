@@ -11,6 +11,12 @@ const routes = [
         path: '/alumno',
         name: 'principal',
         component: principal
+    },
+      {
+        path: '/dashboard', 
+        name: 'dashboard',
+        component: principal,  
+        meta: { requiresAuth: true }
     }
 ]
 
