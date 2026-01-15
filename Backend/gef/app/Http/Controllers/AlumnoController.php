@@ -13,6 +13,7 @@ class AlumnoController extends Controller
 {
     public function store(Request $request)
     {
+        \Log::info('datosRECIBIDOS:', $request->all());
         try {
             $validatedData = $request->validate([
                 'email' => 'required|email|unique:users,email',
@@ -23,7 +24,6 @@ class AlumnoController extends Controller
                 'id_grado' => 'required|integer|exists:grado,id_grado', 
             ]);
 
-            $resultado = DB::transaction(function () use ($validatedData) {
                 
                 $user = User::create([
                     'email' => $validatedData['email'],
@@ -31,7 +31,7 @@ class AlumnoController extends Controller
                     'nombre' => $validatedData['nombre'],
                     'apellidos' => $validatedData['apellidos'],
                     'telefono' => $validatedData['telefono'] ?? null,
-                    'tipo_usuario' => 'alumno', // Forzamos que sea alumno
+                    'tipo_usuario' => 'alumno', // forzamos que sea alumno
                 ]);
 
                 $alumno = Alumno::create([
@@ -40,11 +40,9 @@ class AlumnoController extends Controller
                 ]);
 
                 return ['user' => $user, 'alumno' => $alumno];
-            });
 
             return response()->json([
-                'message' => 'Alumno creado con éxito',
-                'data' => $resultado
+                'message' => 'Alumno creado con éxito'
             ], 201);
             
         } catch (ValidationException $e) {
