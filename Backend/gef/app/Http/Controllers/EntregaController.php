@@ -65,33 +65,23 @@ class EntregaController extends Controller
                 ->toArray();
 
             // Obtener entregas del grado del alumno que aún no ha completado
-            $entregas = DB::table('entrega')
-                ->join('grado', 'entrega.id_grado', '=', 'grado.id_grado')
-                ->where('entrega.id_grado', $alumno->id_grado)
-                ->whereNotIn('entrega.id_entrega', $cuadernosSubidos)
-                ->select(
-                    'entrega.id_entrega',
-                    'entrega.id_tutor',
-                    'entrega.id_grado',
-                    'entrega.created_at',
-                    'entrega.updated_at',
-                    'grado.nombre as grado_nombre',
-                    'grado.id_grado as grado_id'
-                )
-                ->get()
-                ->map(function($entrega) {
-                    return [
-                        'id_entrega' => $entrega->id_entrega,
-                        'id_tutor' => $entrega->id_tutor,
-                        'id_grado' => $entrega->id_grado,
-                        'created_at' => $entrega->created_at,
-                        'updated_at' => $entrega->updated_at,
-                        'grado' => [
-                            'id_grado' => $entrega->grado_id,
-                            'nombre' => $entrega->grado_nombre
-                        ]
-                    ];
-                });
+            $entregas = Entrega::with('grado')
+            ->where('id_grado', $alumno->id_grado)
+            ->whereNotIn('id_entrega', $cuadernosSubidos)
+            ->get()
+            ->map(function ($entrega) {
+                return [
+                    'id_entrega' => $entrega->id_entrega,
+                    'id_tutor' => $entrega->id_tutor,
+                    'id_grado' => $entrega->id_grado,
+                    'created_at' => $entrega->created_at,
+                    'updated_at' => $entrega->updated_at,
+                    'grado' => [
+                        'id_grado' => $entrega->grado->id_grado,
+                        'nombre' => $entrega->grado->nombre
+                    ]
+                ];
+            });
 
             return response()->json($entregas);
 
@@ -109,45 +99,32 @@ class EntregaController extends Controller
      */
     public function verCuadernos(Request $request)
     {
-        $query = DB::table('cuaderno_practicas')
-            ->join('estancia', 'cuaderno_practicas.id_estancia', '=', 'estancia.id_estancia')
-            ->join('alumno', 'estancia.id_alumno', '=', 'alumno.id_alumno')
-            ->join('users', 'alumno.id_alumno', '=', 'users.id_usuario')
-            ->join('entrega', 'cuaderno_practicas.id_entrega', '=', 'entrega.id_entrega')
-            ->join('grado', 'entrega.id_grado', '=', 'grado.id_grado')
-            ->select(
-                'cuaderno_practicas.id_cuaderno',
-                'users.nombre as alumno_nombre',
-                'users.apellidos as alumno_apellidos',
-                'grado.id_grado',
-                'grado.nombre as grado_nombre',
-                'cuaderno_practicas.archivo_pdf',
-                'cuaderno_practicas.fecha_entrega',
-                'cuaderno_practicas.id_estancia'
-            );
+        $cuadernos = CuadernoPracticas::with([
+            'estancia.alumno.usuario',
+            'entrega.grado'
+        ])
+        ->when($request->id_grado, function ($q) use ($request) {
+            $q->whereHas('entrega', function ($q2) use ($request) {
+                $q2->where('id_grado', $request->id_grado);
+            });
+        })
+        ->get()
+        ->map(function ($cuaderno) {
 
-        // Filtrar por grado si se proporciona
-        if ($request->has('id_grado')) {
-            $query->where('entrega.id_grado', $request->id_grado);
-        }
-
-        $cuadernos = $query->get()->map(function($cuaderno) {
-            // Asegurarse de que la URL sea completa
             $archivoPdf = $cuaderno->archivo_pdf;
             if (!filter_var($archivoPdf, FILTER_VALIDATE_URL)) {
-                // Si no es una URL completa, construirla
                 $archivoPdf = url($archivoPdf);
             }
-            
+
             return [
                 'id' => $cuaderno->id_cuaderno,
                 'alumno' => [
-                    'nombre' => $cuaderno->alumno_nombre,
-                    'apellidos' => $cuaderno->alumno_apellidos
+                    'nombre' => $cuaderno->estancia->alumno->usuario->nombre,
+                    'apellidos' => $cuaderno->estancia->alumno->usuario->apellidos,
                 ],
                 'grado' => [
-                    'id' => $cuaderno->id_grado,
-                    'nombre' => $cuaderno->grado_nombre
+                    'id' => $cuaderno->entrega->grado->id_grado,
+                    'nombre' => $cuaderno->entrega->grado->nombre,
                 ],
                 'archivo_pdf' => $archivoPdf,
                 'fecha_entrega' => $cuaderno->fecha_entrega,
@@ -157,6 +134,7 @@ class EntregaController extends Controller
 
         return response()->json($cuadernos);
     }
+
 
     /**
      * Subir cuaderno (solo alumnos)
