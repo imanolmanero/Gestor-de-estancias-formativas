@@ -4,37 +4,48 @@
     <option value="" disabled selected>¿Que quieres Agregar?</option>
     <option value="empresa">Empresa</option>
     <option value="usuario">Usuario</option>
+    <option value="competencia">Competencia</option>
     <option value="RA">Resultado de Aprendizaje</option>
   </select>
 
   <EmpresaForm v-if="tipo==='empresa'" :empresa="empresa" @guardar="guardarEmpresa" />
   <UsuarioForm v-else-if="tipo==='usuario'" :usuario="usuario" :grados="grados" @guardar="guardarUsuario" />
   <RAForm v-else-if="tipo==='RA'" :ra="ra" :grados="grados" @guardar="guardarRA" @añadirCompetencia="añadirCompetencia" @eliminarCompetencia="eliminarCompetencia" />
+  <FormCompetencia v-else-if="tipo==='competencia'" :competencia="competencia" :grados="grados" @guardar="guardarCompetencia" /> 
 </template>
 
 <script>
-import axios from 'axios';
+import axios from '@/axios';
 import EmpresaForm from './FormEmpresa.vue';
 import UsuarioForm from './FormUsuario.vue';
 import RAForm from './FormRA.vue';
-
+import FormCompetencia from './FormCompetencia.vue';
 export default {
-  components: { EmpresaForm, UsuarioForm, RAForm },
+  mounted: function() {
+     this.cargarGrados();
+  },
+  components: { EmpresaForm, UsuarioForm, RAForm, FormCompetencia },
   data() {
     return {
       tipo: '',
       token: localStorage.getItem('token'),
-      empresa: { nombre_empresa: '', cif: '', poblacion: '', email: '', telefono: '', tipo_usuario: 'empresa' },
-      usuario: { nombre: '', apellidos: '', email: '', password: '', tipo_usuario: '', grado_id: '' },
-      ra: { descripcion: '', grado: '', competencias: [''] },
-      grados: [
-        { id: 1, nombre: 'Grado 1' },
-        { id: 2, nombre: 'Grado 2' },
-        { id: 3, nombre: 'Grado 3' }
-      ]
+      empresa: { nombre_empresa: '', cif: '', poblacion: '', email: '', telefono: '' },
+      usuario: { nombre: '', apellidos: '', email: '', password: '', tipo_usuario: '', id_grado: '', telefono: '' },
+      ra: { descripcion: '', id_grado: '', competencias: [''] },
+      grados: [],
+      competencia: { descripcion: '', id_grado: '' }
     };
   },
   methods: {
+    async cargarGrados() {
+  try {
+    const response = await axios.get('http://localhost:8000/api/grados', { 
+      headers: { Authorization: `Bearer ${this.token}` } 
+    });
+    this.grados = response.data;
+  } catch (error) { console.error(error); }
+    },
+
     añadirCompetencia() { this.ra.competencias.push(''); },
     eliminarCompetencia(index) { this.ra.competencias.splice(index, 1); },
 
@@ -45,21 +56,52 @@ export default {
       } catch (error) { console.error(error); }
     },
 
-    async guardarEmpresa() {
-      try {
-        await axios.post('http://localhost:8000/api/guardarEmpresa', this.empresa, { headers: { Authorization: `Bearer ${this.token}` } });
-        alert('Empresa guardada con éxito');
-      } catch (error) { console.error(error); }
-    },
-
-    async guardarUsuario() {
-      try {
-        const payload = { ...this.usuario };
-        if (payload.tipo_usuario !== 'alumno') { delete payload.grado_id; delete payload.curso; }
-        await axios.post('http://localhost:8000/api/guardarUsuario', payload, { headers: { Authorization: `Bearer ${this.token}` } });
-        alert('Usuario guardado con éxito');
-      } catch (error) { console.error(error); }
+   async guardarEmpresa() {
+  try {
+    console.log('Datos de empresa a enviar:', this.empresa);
+    const response = await axios.post('http://localhost:8000/api/guardarEmpresa', this.empresa, { 
+      headers: { Authorization: `Bearer ${this.token}` } 
+    });
+    alert('Empresa guardada con éxito');
+    this.empresa = { nombre_empresa: '', cif: '', poblacion: '', email: '', telefono: ''};
+  } catch (error) {
+    console.error('Error completo:', error);
+    if (error.response && error.response.data) {
+      console.error('Errores de validación:', error.response.data.errors);
+      console.error('Mensaje:', error.response.data.message);
+      // Mostrar los errores específicos
+      if (error.response.data.errors) {
+        const errores = Object.entries(error.response.data.errors)
+          .map(([campo, mensajes]) => `${campo}: ${mensajes.join(', ')}`)
+          .join('\n');
+        alert('Errores de validación:\n' + errores);
+      }
     }
   }
+},
+    async guardarCompetencia() {
+      try {
+        await axios.post('http://localhost:8000/api/guardarCompetencia', this.competencia, { headers: { Authorization: `Bearer ${this.token}` } });
+        alert('Competencia guardada con éxito');
+        this.competencia = { descripcion: '', id_grado: '' };
+      } catch (error) { console.error(error); }
+    },
+    async guardarUsuario() {
+      try {
+       
+        if (payload.tipo_usuario !== 'alumno') { 
+          delete payload.id_grado; delete payload.curso; 
+          await axios.post('http://localhost:8000/api/guardarUsuario', payload, { headers: { Authorization: `Bearer ${this.token}` } });
+          alert('Usuario guardado con éxito');
+        }else{
+          await axios.post('http://localhost:8000/api/guardarAlumno', payload, { headers: { Authorization: `Bearer ${this.token}` } });
+          alert('Alumno guardado con éxito');
+        
+        }
+         } catch (error)  {
+            console.error(error);
+         }
+  }
+}
 }
 </script>

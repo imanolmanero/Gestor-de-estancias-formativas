@@ -6,11 +6,12 @@
       <input type="text" v-model="usuario.nombre" required />
       <label>Apellidos:</label>
       <input type="text" v-model="usuario.apellidos" required />
+      <label>Telefono:</label>
+      <input type="tel" v-model="usuario.telefono" />
       <label>Email:</label>
       <input type="email" v-model="usuario.email" required />
       <label>Contraseña:</label>
       <input type="password" v-model="usuario.password" required />
-      <input type="hidden" v-model="usuario.tipo_usuario" value="tutor_empresa"/>
       <label>Tipo de Usuario:</label>
       <select v-model="usuario.tipo_usuario" required>
         <option value="tutor_empresa">Tutor de Empresa</option>
@@ -21,9 +22,9 @@
 
       <div v-if="usuario.tipo_usuario === 'alumno'">
         <label>Grado:</label>
-        <select v-model="usuario.grado" required>
+        <select v-model="usuario.id_grado" required>
           <option disabled value="">Selecciona un grado</option>
-          <option v-for="grado in grados" :key="grado.id" :value="grado.id">
+          <option v-for="grado in grados" :key="grado.id_grado" :value="grado.id_grado">
             {{ grado.nombre }}
           </option>
         </select>

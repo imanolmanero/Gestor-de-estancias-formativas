@@ -11,7 +11,7 @@
       <label for="email">Email:</label>
       <input type="emaiºl" v-model="empresa.email" required />
       <label for="telefono">Teléfono:</label>
-      <input type="tel" v-model="empresa.telefono" />
+      <input type="tel" v-model="empresa.telefono" required/>
       <input type="hidden" v-model="empresa.tipo_usuario" value="empresa"/>
       <button type="submit">Crear Empresa</button>
     </form>

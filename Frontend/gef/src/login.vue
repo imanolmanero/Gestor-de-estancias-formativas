@@ -13,8 +13,10 @@
 </template>
 
 <script>
+    //libreria para conectar vue con la api
 import axios from '@/axios' 
 
+// exporta el componente para que vue use sus datos y metodos
 export default {
     data() {
         return {
@@ -26,15 +28,17 @@ export default {
     },
     methods: {
         async login() {
+            //para que se vea 'Cargando...' en el boton
             this.loading = true
             this.error = ''
             
             try {
+                //espera a que le responda laravel para validar los datos
                 const response = await axios.post('/login', {
                     email: this.email,
                     password: this.password  
                 })
-                
+                //se guarda el token en local y le da acceso 
                 if (response.data.access_token) {
                     localStorage.setItem('token', response.data.access_token)
                     this.$router.push('/dashboard')
