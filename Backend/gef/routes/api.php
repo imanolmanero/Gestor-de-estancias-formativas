@@ -18,6 +18,10 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
         return $request->user();
     });
 
+    //Tipo de usuario
+    Route::get('/esTutorCentro', [UsuarioController::class, 'esTutorCentro']);
+    Route::get('/esAlumno', [UsuarioController::class, 'esAlumno']);
+
     Route::post('/guardarRA', [ResultadoAprendizajeController::class, 'store']);
 
     Route::get('/grados', [GradosController::class, 'getGrados']);
