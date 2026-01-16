@@ -8,6 +8,7 @@ import { ref, defineAsyncComponent } from 'vue'
 const Alumno = defineAsyncComponent(()=>import('./alumno/alumno.vue'));
 const Crear = defineAsyncComponent(()=>import('./crear/crear.vue'));
 const Cuaderno = defineAsyncComponent(()=>import('./cuaderno/cuaderno.vue'));
+const Sesion = defineAsyncComponent(()=>import('./logout.vue'));
 const vistaActiva = ref(null)
 function cambiar(vista){
     vistaActiva.value = vistaActiva.value === vista ? null : vista;
@@ -20,11 +21,14 @@ function cambiar(vista){
             <button class="col-2" @click="cambiar('alumno')">Info de alumno</button>
             <button class="col-2 ms-3" @click="cambiar('crear')">Crear</button>
             <button class="col-2 ms-3" @click="cambiar('cuaderno')">Cuaderno</button>
+            <button class="col-2 ms-3" @click="cambiar('cerr_sesion')">Cerrar Sesión</button>
         </nav>
         <main class="row" v-if="vistaActiva !== null">
             <Alumno v-if="vistaActiva === 'alumno'"/>
             <Crear v-if="vistaActiva === 'crear'"/>
             <Cuaderno v-if="vistaActiva === 'cuaderno'"/>
+            <Sesion v-if="vistaActiva === 'cerr_sesion'"/>
+            
         </main>
     </body>
 </template>

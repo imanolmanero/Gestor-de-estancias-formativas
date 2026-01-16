@@ -11,7 +11,7 @@ class CompetenciaTecnicaController extends Controller
                 'descripcion' => 'required|string',
                 'id_grado' => 'required|integer|exists:grado,id_grado',
             ]);
-
+            
             try {
                 $competencia = CompetenciaTecnica::create($datos);
                 return response()->json(['message' => 'Competencia técnica guardada con éxito', 'competencia' => $competencia], 201);
