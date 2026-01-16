@@ -126,6 +126,10 @@ class User extends Authenticatable
     {
         return $this->tipo_usuario === 'TUTOR_EMPRESA';
     }
+    public function esAdministrador()
+    {
+        return $this->tipo_usuario === 'ADMIN';
+    }
 
 
 

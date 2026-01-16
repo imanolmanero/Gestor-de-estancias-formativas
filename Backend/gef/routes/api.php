@@ -13,7 +13,6 @@ use App\Http\Controllers\GradosController;
 use App\Http\Controllers\CompetenciaTecnicaController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-
 Route::middleware('auth:sanctum')->group(function () {
     // Usuario autenticado
     Route::get('/user', function (Request $request) {
@@ -40,16 +39,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/grados', [GradoController::class, 'index']);
 
     // Rutas de entregas y cuadernos
-    Route::post('/entregas', [EntregaController::class, 'store']);
-    Route::get('/entregas', [EntregaController::class, 'index']);
-    Route::get('/cuadernos', [EntregaController::class, 'verCuadernos']);
-    Route::post('/cuadernos', [EntregaController::class, 'subirCuaderno']);
-    
-    Route::post('/logout', [AuthController::class, 'logout']);
-});
-
-// Rutas públicas (temporales - considera moverlas a auth:sanctum)
-Route::post('/guardarEmpresa', [EmpresaController::class, 'store']);
-Route::get('/buscarUsuario', [UsuarioController::class, 'search']);
-Route::post('/guardarRA', [ResultadoAprendizajeController::class, 'store']);
-Route::post('/guardarCompetencia', [CompetenciaTecnicaController::class, 'store']);
+    Route::post('/entregas', [EntregaController::class, 'store']); // Crear entrega
+    Route::get('/entregas', [EntregaController::class, 'index']); // Listar entregas
+    Route::get('/cuadernos', [EntregaController::class, 'verCuadernos']); // Ver cuadernos entregados
+    Route::post('/cuadernos', [EntregaController::class, 'subirCuaderno']); // Subir cuaderno
+    Route::post('/guardarEmpresa', [EmpresaController::class, 'store']);
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/user', function (Request $request) {
+            return $request->user();
+        });});
+            Route::get('/buscarUsuario', [UsuarioController::class, 'search']);
+        
+        Route::post('/guardarRA', [ResultadoAprendizajeController::class, 'store']);
+        Route::post('/guardarCompetencia', [CompetenciaTecnicaController::class, 'store']);    
+        

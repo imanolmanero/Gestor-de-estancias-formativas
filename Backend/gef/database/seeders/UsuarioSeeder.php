@@ -73,7 +73,7 @@ class UsuarioSeeder extends Seeder
                 'tipo_usuario' => 'ALUMNO'
             ]);
         }
-
+        
         echo "✅ Creados " . User::count() . " usuarios\n";
     }
 }

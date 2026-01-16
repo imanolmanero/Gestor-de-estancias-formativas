@@ -1,14 +1,50 @@
 <template>
-    <div class="login-container">
-        <h2>Inicio de Sesión</h2>
-        <form @submit.prevent="login">
-            <input type="email" v-model="email" placeholder="Email" required>
-            <input type="password" v-model="password" placeholder="Contraseña" required>
-            <button type="submit" :disabled="loading">
-                {{ loading ? 'Cargando...' : 'Continuar' }}
-            </button>
-        </form>
-        <p v-if="error" class="error">{{ error }}</p>
+    
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <img src="./assets/images/logo.jpg" class="btn-icon" alt="Logo de egibide">
+                        
+                        <form @submit.prevent="login">
+                            <div class="mb-3">
+                                <input 
+                                    type="email" 
+                                    v-model="email" 
+                                    placeholder="Email" 
+                                    class="form-control"
+                                    required
+                                >
+                            </div>
+                            
+                            <div class="mb-3">
+                                <input 
+                                    type="password" 
+                                    v-model="password" 
+                                    placeholder="Contraseña" 
+                                    class="form-control"
+                                    required
+                                >
+                            </div>
+                            
+                            <button 
+                                type="submit" 
+                                class="btn btn-primary w-100"
+                                :disabled="loading"
+                            >
+                                <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+                                {{ loading ? 'Cargando...' : 'Continuar' }}
+                            </button>
+                        </form>
+                        
+                        <div v-if="error" class="alert alert-danger mt-3 mb-0" role="alert">
+                            {{ error }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -58,66 +94,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.login-container {
-    max-width: 400px;
-    margin: 100px auto;
-    padding: 30px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    border-radius: 8px;
-    background: white;
-}
-
-h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-input {
-    display: block;
-    width: 100%;
-    margin: 15px 0;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-    box-sizing: border-box;
-}
-
-input:focus {
-    outline: none;
-    border-color: #4CAF50;
-}
-
-button {
-    width: 100%;
-    padding: 12px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-button:hover:not(:disabled) {
-    background-color: #45a049;
-}
-
-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-}
-
-.error {
-    color: #f44336;
-    text-align: center;
-    margin-top: 15px;
-    font-size: 14px;
-    padding: 10px;
-    background-color: #ffebee;
-    border-radius: 4px;
-}
-</style>
+<style scoped src="./assets/css/login.css"></style>
