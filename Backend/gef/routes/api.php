@@ -11,9 +11,9 @@ use App\Http\Controllers\EntregaController;
 use App\Http\Controllers\GradoController;
 use App\Http\Controllers\GradosController;
 use App\Http\Controllers\CompetenciaTecnicaController;
+use App\Http\Controllers\SeguimientoController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/cuadernos', [EntregaController::class, 'verCuadernos']); // Ver cuadernos entregados
     Route::post('/cuadernos', [EntregaController::class, 'subirCuaderno']); // Subir cuaderno
     Route::post('/guardarEmpresa', [EmpresaController::class, 'store']);
+    Route::get('/empresas', [EmpresaController::class, 'index']);
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
@@ -41,4 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
         
         Route::post('/guardarRA', [ResultadoAprendizajeController::class, 'store']);
         Route::post('/guardarCompetencia', [CompetenciaTecnicaController::class, 'store']);    
-        
+        Route::get('/mostrarSeguimientos', [SeguimientoController::class, 'index']);
+        Route::get('/seguimientos/{id}', [SeguimientoController::class, 'show']);
+        Route::post('/guardarSeguimiento', [SeguimientoController::class, 'store']);
+        Route::delete('/seguimientos/{id}', [SeguimientoController::class, 'delete']);
