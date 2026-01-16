@@ -18,6 +18,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+
+    //Tipo de usuario
+    Route::get('/esTutorCentro', [UsuarioController::class, 'esTutorCentro']);
+    Route::get('/esAlumno', [UsuarioController::class, 'esAlumno']);
+
     Route::post('/guardarRA', [ResultadoAprendizajeController::class, 'store']);
 
     Route::get('/grados', [GradosController::class, 'getGrados']);
