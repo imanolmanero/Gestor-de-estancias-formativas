@@ -58,7 +58,6 @@ export default {
 
    async guardarEmpresa() {
   try {
-    console.log('Datos de empresa a enviar:', this.empresa);
     const response = await axios.post('http://localhost:8000/api/guardarEmpresa', this.empresa, { 
       headers: { Authorization: `Bearer ${this.token}` } 
     });
@@ -66,17 +65,7 @@ export default {
     this.empresa = { nombre_empresa: '', cif: '', poblacion: '', email: '', telefono: ''};
   } catch (error) {
     console.error('Error completo:', error);
-    if (error.response && error.response.data) {
-      console.error('Errores de validación:', error.response.data.errors);
-      console.error('Mensaje:', error.response.data.message);
-      // Mostrar los errores específicos
-      if (error.response.data.errors) {
-        const errores = Object.entries(error.response.data.errors)
-          .map(([campo, mensajes]) => `${campo}: ${mensajes.join(', ')}`)
-          .join('\n');
-        alert('Errores de validación:\n' + errores);
-      }
-    }
+    
   }
 },
     async guardarCompetencia() {
@@ -88,7 +77,7 @@ export default {
     },
     async guardarUsuario() {
       try {
-       
+        const payload = { ...this.usuario };
         if (payload.tipo_usuario !== 'alumno') { 
           delete payload.id_grado; delete payload.curso; 
           await axios.post('http://localhost:8000/api/guardarUsuario', payload, { headers: { Authorization: `Bearer ${this.token}` } });

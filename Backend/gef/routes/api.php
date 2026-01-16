@@ -12,10 +12,6 @@ use App\Http\Controllers\GradoController;
 use App\Http\Controllers\GradosController;
 use App\Http\Controllers\CompetenciaTecnicaController;
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
 
     Route::post('/guardarRA', [ResultadoAprendizajeController::class, 'store']);
 
@@ -31,10 +27,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/entregas', [EntregaController::class, 'index']); // Listar entregas
     Route::get('/cuadernos', [EntregaController::class, 'verCuadernos']); // Ver cuadernos entregados
     Route::post('/cuadernos', [EntregaController::class, 'subirCuaderno']); // Subir cuaderno
-  });
     Route::post('/guardarEmpresa', [EmpresaController::class, 'store']);
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', function (Request $request) {
             return $request->user();
         });});

@@ -1,0 +1,14 @@
+button {
+  background-color: #1b6dac;
+}
+button:hover {
+  background-color: #155a8a;
+}
+
+.btn-icon {
+  height: 200px;
+  width: auto;
+  margin-left: 60px;
+}
+
+/*# sourceMappingURL=login.css.map */

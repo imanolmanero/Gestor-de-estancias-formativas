@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('apellidos', 150);
             $table->string('telefono', 20)->nullable();
             $table->rememberToken();
-            $table->enum('tipo_usuario', ['ALUMNO', 'TUTOR_CENTRO', 'TUTOR_EMPRESA']);
+            $table->enum('tipo_usuario', ['ALUMNO', 'TUTOR_CENTRO', 'TUTOR_EMPRESA', 'ADMIN']);
             $table->timestamps(); 
         });
 
