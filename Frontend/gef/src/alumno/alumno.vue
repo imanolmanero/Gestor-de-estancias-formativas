@@ -20,7 +20,7 @@ function cambiar(vista){
 const alumno = reactive({});
 async function getUser(){
     try{
-        const response = await fetch('http://localhost:8000/api/buscarUsuario?user_id=5');
+        const response = await fetch('http://localhost:8000/api/buscarUsuario?user_id=11');
         const data = await response.json();
         Object.assign(alumno, data);
         
