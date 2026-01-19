@@ -19,7 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
-    
+});
     // manejo de alumnos
     Route::get('/usuario/me', [UsuarioController::class, 'getAuthUser']);
     Route::get('/grados-con-alumnos', [UsuarioController::class, 'listarGradosConAlumnos']);
