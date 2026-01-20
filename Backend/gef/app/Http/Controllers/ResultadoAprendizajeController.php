@@ -14,21 +14,15 @@ class ResultadoAprendizajeController extends Controller
     {
         $request->validate([
             'descripcion' => 'required|string',
-            'grado_id' => 'required|integer',
-            'competencias' => 'required|array',
-            'competencias.*.descripcion' => 'required|string',
+            'id_asignatura' => 'required|integer',
+            'id_grado' => 'required|integer',
         ]);
         DB::transaction(function () use ($request){
             $ra = ResultadoAprendizaje::create([
                 'descripcion' => $request->descripcion,
-                'grado_id' => $request->grado_id,
+                'id_grado' => $request->id_grado,
+                'id_asignatura' => $request->id_asignatura,
             ]);
-            foreach ($request->competencias as $compData) {
-                Competencia::create([
-                    'descripcion' => $compData['descripcion'],
-                    'resultado_aprendizaje_id' => $ra->id,
-                ]);
-            }
         });
         return response()->json(['message' => 'Resultado de Aprendizaje guardado correctamente.'], 201);
 
