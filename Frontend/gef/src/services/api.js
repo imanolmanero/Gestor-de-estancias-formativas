@@ -115,8 +115,9 @@ export default {
     actualizarHorario(idEstancia, data) {
         return api.put(`/horario/${idEstancia}`, data);
     },
-   getEmpresas() {
-    return api.get('/empresas');
+    
+    getEmpresas() {
+      return api.get('/empresas');
     },
 
     getEmpresaAlumno(userId) {
@@ -126,4 +127,15 @@ export default {
     asignarEmpresa(datos) {
         return api.post('/asignar-empresa', datos);
     },
-}
+    
+    getNotaFinalAlumno(idAlumno, idAsignatura) {
+        return api.get(
+            `/alumnos/${idAlumno}/asignaturas/${idAsignatura}/nota-final`
+        )
+    },
+    getNotas(idAlumno) {
+        return api.get(
+            `/alumnos/${idAlumno}/notas`
+        )
+    }
+};

@@ -209,7 +209,11 @@ onMounted(() => {
                     :alumno-id="alumno.id_usuario"
                 />
                 <Empresa v-if="vistaActiva === 'empresa'" :alumno-id="alumno.id_usuario"/>
+<<<<<<< HEAD
+                <Notas v-if="vistaActiva === 'notas'" :id-alumno="alumno.id_usuario"/>
+=======
                 <Notas v-if="vistaActiva === 'notas'"/>
+>>>>>>> fa9f0378e3dc87823af205849ec26769f19e521a
                 <Seguimiento v-if="vistaActiva === 'seguimiento'"/>
             </div>
         </template>
