@@ -140,7 +140,7 @@ async function guardarNota(idCuaderno) {
                     </td>
                     <td>{{ formatearFecha(cuaderno.fecha_entrega) }}</td>
                     <td>
-                        <button v-if="cuadernoNotaActivo !== cuaderno.id"
+                        <button v-if="cuadernoNotaActivo !== cuaderno.id" class="btn-cuaderno"
                         @click="mostrarInputNota(cuaderno.id)">
                             Poner nota
                         </button>
@@ -149,8 +149,7 @@ async function guardarNota(idCuaderno) {
                             <input type="number" min="0" max="10" required="Debes poner una nota"
                             v-model.number="notaCuaderno" placeholder="Nota cuaderno"/>
 
-                            <button @click="guardarNota(cuaderno.id)">Guardar</button>
-                            <button @click="cancelarNota">Cancelar</button>
+                            <button @click="guardarNota(cuaderno.id)" class="btn-cuaderno">Guardar</button>
                         </div>
                     </td>
                 </tr>

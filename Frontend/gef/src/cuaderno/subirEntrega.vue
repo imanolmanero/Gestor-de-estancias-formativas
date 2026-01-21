@@ -98,10 +98,10 @@ function cancelar() {
         </div>
 
         <div class="botones">
-            <button type="submit" :disabled="loading || !archivo">
+            <button type="submit" class="btn-cuaderno" :disabled="loading || !archivo">
                 {{ loading ? 'Subiendo...' : 'Subir' }}
             </button>
-            <button type="button" @click="cancelar" :disabled="loading">
+            <button class="btn-cuaderno" @click="cancelar" :disabled="loading">
                 Cancelar
             </button>
         </div>

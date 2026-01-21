@@ -54,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/seguimientos/{id}', [SeguimientoController::class, 'delete']);
 
     // Horario/Calendario
+
     Route::get('/horario-alumno', [EstanciaController::class, 'getHorarioAlumno']);
     Route::post('/horario', [EstanciaController::class, 'crearHorario']);
     Route::put('/horario/{idEstancia}', [EstanciaController::class, 'actualizarHorario']);
@@ -66,4 +67,13 @@ Route::middleware('auth:sanctum')->group(function () {
         '/alumnos/{idAlumno}/notas',
         [AlumnoController::class, 'getNotas']
     );
+    Route::post(
+        '/alumnos/{idAlumno}/notasTrans',
+        [AlumnoController::class, 'ponerNotasTrans']
+    );
+    Route::get(
+        '/alumnos/{idAlumno}/estancia',
+        [AlumnoController::class, 'getEstanciaAlumno']
+    );
+
 });

@@ -24,10 +24,10 @@ onMounted(async () => {
     <h1>Entrega de Cuaderno</h1>
     <div id="opcion">
         <div v-if="esTutorCentro">
-            <button class="col-2" @click="cambiarVista('entrega')">Crear entrega</button>
-            <button class="col-2" @click="cambiarVista('verEntrega')">Ver entregas</button>
+            <button class="btn-cuaderno col-2" @click="cambiarVista('entrega')">Crear entrega</button>
+            <button class="btn-cuaderno col-2" @click="cambiarVista('verEntrega')">Ver entregas</button>
         </div>
-        <button v-if="esAlumno" class="col-2" @click="cambiarVista('subir')">Subir cuaderno</button>
+        <button v-if="esAlumno" class="btn-cuaderno col-2" @click="cambiarVista('subir')">Subir cuaderno</button>
     </div>
     <div id="datos">
         <Entrega v-if="entregaActiva === 'entrega'" />

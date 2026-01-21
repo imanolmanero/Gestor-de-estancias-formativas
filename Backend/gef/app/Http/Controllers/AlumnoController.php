@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User; // Usamos el modelo User que es el base
+use App\Models\User; 
 use App\Models\Alumno;
 use App\Models\Asignatura;
 use App\Services\Notas\CalculoNotaFinalService;
@@ -98,6 +98,7 @@ class AlumnoController extends Controller
         if (!$alumno) {
             return response()->json(['message' => 'Alumno no encontrado'], 404);
         }
+      
 
         try {
             $asignaturas = Asignatura::where('id_grado', $alumno->id_grado)
@@ -127,6 +128,86 @@ class AlumnoController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    
+    }
+    public function getEstanciaAlumno($idAlumno)
+{
+    try {
+        $estancia = DB::table('estancia')
+            ->where('id_alumno', $idAlumno)
+            ->orderBy('fecha_inicio', 'desc')
+            ->first();
+
+        if (!$estancia) {
+            return response()->json([
+                'message' => 'No se encontró ninguna estancia para este alumno'
+            ], 404);
+        }
+
+        return response()->json($estancia);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Error al obtener la estancia',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function ponerNotasTrans(Request $request, $idAlumno)
+{
+    $user = $request->user();
+
+    if (!$user->esTutorEmpresa()) {
+        return response()->json(['message' => 'No autorizado'], 403);
     }
 
+    $validatedData = $request->validate([
+        'id_estancia' => 'required|integer|exists:estancia,id_estancia',
+        'notas' => 'required|array',
+        'notas.*.id_competencia_trans' => 'required|integer|exists:competencia_transversal,id_competencia_trans',
+        'notas.*.nota' => 'required|numeric|min:1|max:4',
+    ]);
+
+    // Verificar que la estancia pertenece al alumno
+    $estancia = DB::table('estancia')
+        ->where('id_estancia', $validatedData['id_estancia'])
+        ->where('id_alumno', $idAlumno)
+        ->first();
+
+    if (!$estancia) {
+        return response()->json([
+            'message' => 'La estancia no pertenece a este alumno'
+        ], 404);
+    }
+
+    // Verificar si ya existen notas para esta estancia
+    $notasExistentes = DB::table('nota_competencia_transversal')
+        ->where('id_estancia', $validatedData['id_estancia'])
+        ->exists();
+
+    if ($notasExistentes) {
+        return response()->json([
+            'message' => 'Las notas para esta estancia ya han sido registradas y no pueden modificarse'
+        ], 422);
+    }
+
+    try {
+        foreach ($validatedData['notas'] as $notaData) {
+            DB::table('nota_competencia_transversal')->insert([
+                'id_estancia' => $validatedData['id_estancia'],
+                'id_competencia_trans' => $notaData['id_competencia_trans'],
+                'nota' => $notaData['nota'],
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+
+        return response()->json(['message' => 'Notas guardadas con éxito']);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Error al guardar las notas',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 }

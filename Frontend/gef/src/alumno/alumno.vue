@@ -10,7 +10,7 @@ const Calendario = defineAsyncComponent(()=>import('./calendario.vue'));
 const Empresa = defineAsyncComponent(()=>import('./empresa.vue'));
 const Notas = defineAsyncComponent(()=>import('./notas.vue'));
 const Seguimiento = defineAsyncComponent(()=>import('./seguimiento.vue'));
-
+const PonerNotas = defineAsyncComponent(()=>import('./ponerNotas.vue'));
 const vistaActiva = ref(null)
 const alumno = reactive({});
 
@@ -200,21 +200,17 @@ onMounted(() => {
                     <button class="col-5 ms-2 mb-2" @click="cambiar('empresa')">Ver empresa</button>
                     <button class="col-5" @click="cambiar('notas')">Ver notas</button>
                     <button class="col-5 ms-2" @click="cambiar('seguimiento')">Ver seguimiento</button>
+                    <button class="col-5 mt-2" @click="cambiar('ponerNotas')">Poner notas</button>
                 </div>
             </div>
 
             <div id="secundario" class="col-8 row">
-                <Calendario 
-                    v-if="vistaActiva === 'calendario'"
-                    :alumno-id="alumno.id_usuario"
-                />
+                <Calendario v-if="vistaActiva === 'calendario'" :alumno-id="alumno.id_usuario"/>
                 <Empresa v-if="vistaActiva === 'empresa'" :alumno-id="alumno.id_usuario"/>
-<<<<<<< HEAD
                 <Notas v-if="vistaActiva === 'notas'" :id-alumno="alumno.id_usuario"/>
-=======
-                <Notas v-if="vistaActiva === 'notas'"/>
->>>>>>> fa9f0378e3dc87823af205849ec26769f19e521a
                 <Seguimiento v-if="vistaActiva === 'seguimiento'"/>
+                <PonerNotas v-if="vistaActiva === 'ponerNotas'" :idAlumno="alumno.id_usuario" />
+
             </div>
         </template>
     </div>

@@ -137,5 +137,15 @@ export default {
         return api.get(
             `/alumnos/${idAlumno}/notas`
         )
-    }
+    },
+     ponerNotasTrans(idAlumno, notas) {
+        console.log('Datos enviados a API:', notas);
+        return api.post(`/alumnos/${idAlumno}/notasTrans`, notas);
+    },
+    getEstanciaAlumno(idAlumno) {
+        return api.get(
+            `/alumnos/${idAlumno}/estancia`
+        )
+    },
+   
 };

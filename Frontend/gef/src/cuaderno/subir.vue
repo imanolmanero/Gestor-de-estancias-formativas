@@ -66,7 +66,7 @@ async function cargarEntregas() {
 
         <div v-else>
             <div v-for="entrega in entregas" :key="entrega.id_entrega" class="entrega-item">
-                <button @click="habilitar(entrega)" class="btn-entrega">
+                <button @click="habilitar(entrega)" class="btn-cuaderno">
                     Tienes una entrega pendiente para {{ entrega.grado.nombre }}
                 </button>
             </div>
