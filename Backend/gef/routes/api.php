@@ -12,7 +12,7 @@ use App\Http\Controllers\GradoController;
 use App\Http\Controllers\CompetenciaTecnicaController;
 use App\Http\Controllers\SeguimientoController;
 use App\Http\Controllers\EstanciaController;
-
+use App\Http\Controllers\AsignaturaController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
@@ -37,7 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/grados', [GradoController::class, 'index']);
     
     Route::post('/guardarRA', [ResultadoAprendizajeController::class, 'store']);
-    
+    Route::get('/asignaturas/{id_grado}', [AsignaturaController::class, 'obtenerAsignaturasporGrado']);  
     Route::post('/guardarCompetencia', [CompetenciaTecnicaController::class, 'store']);
     
     Route::post('/entregas', [EntregaController::class, 'store']);
@@ -54,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/seguimientos/{id}', [SeguimientoController::class, 'delete']);
 
     // Horario/Calendario
+
     Route::get('/horario-alumno', [EstanciaController::class, 'getHorarioAlumno']);
     Route::post('/horario', [EstanciaController::class, 'crearHorario']);
     Route::put('/horario/{idEstancia}', [EstanciaController::class, 'actualizarHorario']);
@@ -66,4 +67,13 @@ Route::middleware('auth:sanctum')->group(function () {
         '/alumnos/{idAlumno}/notas',
         [AlumnoController::class, 'getNotas']
     );
+    Route::post(
+        '/alumnos/{idAlumno}/notasTrans',
+        [AlumnoController::class, 'ponerNotasTrans']
+    );
+    Route::get(
+        '/alumnos/{idAlumno}/estancia',
+        [AlumnoController::class, 'getEstanciaAlumno']
+    );
+
 });

@@ -56,7 +56,7 @@ async function crearEntrega(e) {
             </option>
         </select>
 
-        <button type="submit" :disabled="loading">
+        <button type="btn-cuaderno submit" :disabled="loading">
             {{ loading ? 'Creando...' : 'Crear entrega' }}
         </button>
 
