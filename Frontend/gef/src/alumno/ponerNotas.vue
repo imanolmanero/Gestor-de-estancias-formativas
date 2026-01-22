@@ -20,11 +20,9 @@ const idEstancia = ref(null);
 const cargando = ref(true);
 const error = ref(null);
 
-// Cargar la estancia del alumno
 const cargarEstancia = async () => {
     try {
         cargando.value = true;
-        // Necesitas un endpoint para obtener la estancia del alumno
         const response = await api.getEstanciaAlumno(props.idAlumno);
         idEstancia.value = response.data.id_estancia;
     } catch (err) {
@@ -42,10 +40,10 @@ const guardarNotas = async () => {
     }
 
     const payload = {
-        id_estancia: parseInt(idEstancia.value), // Ya está bien con guión bajo
+        id_estancia: parseInt(idEstancia.value), 
         notas: [
             {
-                id_competencia_trans: 1, // Ya está bien con guión bajo
+                id_competencia_trans: 1, 
                 nota: parseFloat(notas.value.comunicacion)
             },
             {
@@ -63,25 +61,13 @@ const guardarNotas = async () => {
         ]
     };
 
-    console.log('Payload que se enviará:', JSON.stringify(payload, null, 2)); // Ver el JSON exacto
 
     try {
         const response = await api.ponerNotasTrans(props.idAlumno, payload);
-        console.log('Respuesta exitosa:', response.data);
         alert('Notas guardadas exitosamente');
     } catch (err) {
         console.error('Error completo:', err);
-        console.error('Datos del error:', err.response?.data);
-        
-        if (err.response?.data?.errors) {
-            console.error('Errores de validación:', err.response.data.errors);
-            const errores = Object.entries(err.response.data.errors)
-                .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
-                .join('\n');
-            alert('Errores de validación:\n' + errores);
-        } else {
-            alert(err.response?.data?.message || 'Hubo un error al guardar las notas');
-        }
+        alert('Error al guardar las notas');
     }
 };
 onMounted(() => {

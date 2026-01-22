@@ -89,47 +89,91 @@ class AlumnoController extends Controller
     }
 
     public function getNotas(Request $request, $idAlumno)
-    {
-        $user = $request->user();
+{
+    $user = $request->user();
 
-        // Validar alumno
-        $alumno = Alumno::where('id_alumno', $idAlumno)->first();
+    // Validar alumno
+    $alumno = Alumno::where('id_alumno', $idAlumno)->first();
 
-        if (!$alumno) {
-            return response()->json(['message' => 'Alumno no encontrado'], 404);
-        }
-      
+    if (!$alumno) {
+        return response()->json(['message' => 'Alumno no encontrado'], 404);
+    }
 
-        try {
-            $asignaturas = Asignatura::where('id_grado', $alumno->id_grado)
-                ->leftJoin('nota_asignatura_centro', function ($join) use ($idAlumno) {
-                    $join->on(
-                        'asignatura.id_asignatura',
-                        '=',
-                        'nota_asignatura_centro.id_asignatura'
-                    )
-                    ->on('nota_asignatura_centro.id_alumno','=',DB::raw($idAlumno));
+    try {
+        // 1. NOTAS DE ASIGNATURAS (Centro Educativo)
+        $asignaturas = DB::table('asignatura')
+            ->where('asignatura.id_grado', $alumno->id_grado)
+            ->leftJoin('nota_asignatura_centro', function ($join) use ($idAlumno) {
+                $join->on('asignatura.id_asignatura', '=', 'nota_asignatura_centro.id_asignatura')
+                     ->where('nota_asignatura_centro.id_alumno', '=', $idAlumno);
+            })
+            ->select(
+                'asignatura.id_asignatura',
+                'asignatura.nombre',
+                'nota_asignatura_centro.nota'
+            )
+            ->get();
+
+        // Obtener la estancia del alumno
+        $estancia = DB::table('estancia')
+            ->where('id_alumno', $idAlumno)
+            ->orderBy('fecha_inicio', 'desc')
+            ->first();
+
+        $tecnicas = [];
+        $transversales = [];
+
+        if ($estancia) {
+            // 2. NOTAS DE RESULTADOS DE APRENDIZAJE (Técnicas - Empresa)
+            $tecnicas = DB::table('resultado_aprendizaje')
+                ->join('asignatura', 'resultado_aprendizaje.id_asignatura', '=', 'asignatura.id_asignatura')
+                ->join('competencia_tecnica_resultado', 'resultado_aprendizaje.id_resultado', '=', 'competencia_tecnica_resultado.id_resultado')
+                ->join('competencia_tecnica', 'competencia_tecnica_resultado.id_competencia', '=', 'competencia_tecnica.id_competencia')
+                ->leftJoin('nota_resultado_aprendizaje', function ($join) use ($estancia) {
+                    $join->on('competencia_tecnica_resultado.id_competencia', '=', 'nota_resultado_aprendizaje.id_competencia')
+                         ->on('competencia_tecnica_resultado.id_resultado', '=', 'nota_resultado_aprendizaje.id_resultado')
+                         ->where('nota_resultado_aprendizaje.id_estancia', '=', $estancia->id_estancia);
                 })
+                ->where('competencia_tecnica.id_grado', $alumno->id_grado)
                 ->select(
-                    'asignatura.id_asignatura',
-                    'asignatura.nombre',
-                    'nota_asignatura_centro.nota'
+                    'competencia_tecnica.id_competencia',
+                    'competencia_tecnica.descripcion as competencia_descripcion',
+                    'resultado_aprendizaje.id_resultado',
+                    'resultado_aprendizaje.descripcion as resultado_descripcion',
+                    'asignatura.nombre as asignatura_nombre',
+                    'nota_resultado_aprendizaje.nota'
                 )
                 ->get();
 
-            return response()->json([
-                'alumno_id' => $idAlumno,
-                'asignaturas' => $asignaturas
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Error al obtener las notas',
-                'error' => $e->getMessage()
-            ], 500);
+            // 3. NOTAS DE COMPETENCIAS TRANSVERSALES (Empresa)
+            $transversales = DB::table('competencia_transversal')
+                ->leftJoin('nota_competencia_transversal', function ($join) use ($estancia) {
+                    $join->on('competencia_transversal.id_competencia_trans', '=', 'nota_competencia_transversal.id_competencia_trans')
+                         ->where('nota_competencia_transversal.id_estancia', '=', $estancia->id_estancia);
+                })
+                ->select(
+                    'competencia_transversal.id_competencia_trans',
+                    'competencia_transversal.descripcion',
+                    'nota_competencia_transversal.nota'
+                )
+                ->get();
         }
-    
+
+        return response()->json([
+            'alumno_id' => $idAlumno,
+            'asignaturas' => $asignaturas,
+            'tecnicas' => $tecnicas,
+            'transversales' => $transversales,
+            'tiene_estancia' => $estancia !== null
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Error al obtener las notas',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
     public function getEstanciaAlumno($idAlumno)
 {
     try {
