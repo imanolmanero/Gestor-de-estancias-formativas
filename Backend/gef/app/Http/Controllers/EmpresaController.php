@@ -63,6 +63,7 @@ class EmpresaController extends Controller
      */
     public function asignarEmpresa(Request $request)
     {
+        $usuario = $request->user();
         $validatedData = $request->validate([
             'id_alumno' => 'required|exists:alumno,id_alumno',
             'id_empresa' => 'required|exists:empresa,id_empresa',
@@ -73,7 +74,7 @@ class EmpresaController extends Controller
             'dias_totales' => 'required|integer|min:1',
         ]);
     
-        $validatedData['id_tutor_centro'] = auth()->user()->id;
+        $validatedData['id_tutor_centro'] = $usuario->id_usuario;
 
         $estancia = Estancia::create($validatedData);
 
