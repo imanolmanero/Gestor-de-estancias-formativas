@@ -1,6 +1,7 @@
 <template>
+           <h2>Crear Competencia</h2>
+
     <form @submit.prevent="$emit('guardar')">
-       
         <div>
             <label for="descripcion">Descripción:</label>
             <textarea v-model="competencia.descripcion" required></textarea>
@@ -17,6 +18,8 @@
     </form>
 </template>
 <script>
+import "../assets/css/crear.css";
+
     export default {
         props: ['competencia', 'grados']
     }

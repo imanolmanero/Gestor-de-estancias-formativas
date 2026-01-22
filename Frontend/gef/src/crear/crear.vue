@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import "../assets/css/crear.css";
 import axios from '@/axios';
 import EmpresaForm from './FormEmpresa.vue';
 import UsuarioForm from './FormUsuario.vue';

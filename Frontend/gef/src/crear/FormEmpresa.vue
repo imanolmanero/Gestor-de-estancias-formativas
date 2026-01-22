@@ -19,6 +19,8 @@
 </template>
 
 <script>
+  import "../assets/css/crear.css";
+
 export default {
   props: ['empresa']
 }

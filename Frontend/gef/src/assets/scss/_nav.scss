@@ -3,10 +3,30 @@ nav{
     border-radius: .4rem;
     box-shadow: 
     0.3em 0.3em 1em grey;
-    button{
-        background-color: #92557f;
-        color: white;
-        box-shadow: 0.2em 0.2em 0.3em grey;
-        height: 2em;
+   button {
+    background-color: #92557f;
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+
+    &:hover {
+      background-color: #bb6da3;
+      transform: translateY(-2px);
     }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  .btn-icon {
+    height: 200px;
+    width: auto;
+    margin-left: 50px;
+  }
 }

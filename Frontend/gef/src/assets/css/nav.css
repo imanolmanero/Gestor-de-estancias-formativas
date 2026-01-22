@@ -5,9 +5,26 @@ nav {
 }
 nav button {
   background-color: #92557f;
-  color: white;
-  box-shadow: 0.2em 0.2em 0.3em grey;
-  height: 2em;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+nav button:hover {
+  background-color: #bb6da3;
+  transform: translateY(-2px);
+}
+nav button:active {
+  transform: translateY(0);
+}
+nav .btn-icon {
+  height: 200px;
+  width: auto;
+  margin-left: 50px;
 }
 
 /*# sourceMappingURL=nav.css.map */

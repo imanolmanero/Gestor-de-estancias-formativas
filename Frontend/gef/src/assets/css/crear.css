@@ -1,0 +1,60 @@
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+form label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+form input,
+form select {
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f5f5f5;
+  font-size: 16px;
+  color: #333;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+form input:focus,
+form select:focus {
+  border-color: #92557f;
+  box-shadow: 0 0 5px rgba(146, 85, 127, 0.5);
+  outline: none;
+}
+form select {
+  cursor: pointer;
+}
+form button {
+  background-color: #92557f;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+form button:hover {
+  background-color: #bb6da3;
+  transform: translateY(-2px);
+}
+form button:active {
+  transform: translateY(0);
+}
+form .btn-icon {
+  height: 200px;
+  width: auto;
+  margin-left: 50px;
+}
+
+/*# sourceMappingURL=crear.css.map */
