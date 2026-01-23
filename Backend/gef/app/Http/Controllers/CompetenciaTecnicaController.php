@@ -2,23 +2,30 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CompetenciaTecnica;
-
+use Illuminate\Support\Facades\DB;
 class CompetenciaTecnicaController extends Controller
     {
         public function store(Request $request)
         {
-            $datos = $request->validate([
+            $request->validate([
                 'descripcion' => 'required|string',
                 'id_grado' => 'required|integer|exists:grado,id_grado',
+                'resultado_aprendizaje' => 'required|array',
+                'resultado_aprendizaje.*' => 'integer|exists:resultado_aprendizaje,id_resultado',
             ]);
-            
-            try {
-                $competencia = CompetenciaTecnica::create($datos);
-                return response()->json(['message' => 'Competencia técnica guardada con éxito', 'competencia' => $competencia], 201);
-            } catch (\Exception $e) {
-                return response()->json(['error' => 'Error al guardar la competencia técnica: ' . $e->getMessage()], 500);
-            }
-        }
+            try{
+                DB::beginTransaction();
+                $competencia = CompetenciaTecnica::create([
+                    'descripcion' => $request->descripcion,
+                    'id_grado' => $request->id_grado,
+                ]);
+                $competencia->resultadosAprendizaje()->attach($request->resultado_aprendizaje);
+                DB::commit();
+        
+                }catch(\Exception $e){
+                    DB::rollBack();
+                    return response()->json(['message' => 'Error al crear la competencia técnica', 'error' => $e->getMessage()], 500);
+        
+                }
     }
-
-?>
+}
