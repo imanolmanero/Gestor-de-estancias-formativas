@@ -37,14 +37,11 @@ const cargarDatosIniciales = async () => {
         
         // Obtener alumno para saber su grado
         const responseAlumno = await api.getAlumno(props.idAlumno);
-        console.log('Alumno:', responseAlumno.data);
         idGrado.value = responseAlumno.data.id_grado;
-
         
         // Obtener competencias técnicas del grado
         const responseCompetencias = await api.getCompetenciasTecnicas(idGrado.value);
         competenciasDisponibles.value = responseCompetencias.data;
-        console.log('Competencias técnicas:', responseCompetencias.data);
         
     } catch (err) {
         console.error('Error al cargar datos:', err);

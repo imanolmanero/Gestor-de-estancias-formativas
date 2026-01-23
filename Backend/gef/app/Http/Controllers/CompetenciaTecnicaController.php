@@ -29,28 +29,23 @@ class CompetenciaTecnicaController extends Controller
     /**
      * Obtener todas las competencias técnicas de un grado
      */
-public function obtenerPorGrado($idGrado)
-{
-    try {
-        $idGrado = (int) $idGrado;
+    public function obtenerPorGrado($idGrado)
+    {
+        try {
+            $competencias = CompetenciaTecnica::where('id_grado', $idGrado)
+                ->select('id_competencia', 'descripcion')
+                ->get();
 
-        // Debug temporal
-        $competenciasTotales = CompetenciaTecnica::all();
+            \Log::info('Competencias encontradas para grado ' . $idGrado, [
+                'count' => $competencias->count(),
+                'competencias' => $competencias
+            ]);
 
-        $competencias = CompetenciaTecnica::where('id_grado', $idGrado)
-            ->select('id_competencia', 'descripcion')
-            ->get();
-
-        return response()->json([
-            'id_grado_recibido' => $idGrado,
-            'competencias_totales' => $competenciasTotales,
-            'competencias_filtradas' => $competencias
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => 'Error al obtener competencias técnicas: ' . $e->getMessage()
-        ], 500);
+            return response()->json($competencias);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al obtener competencias técnicas: ' . $e->getMessage()
+            ], 500);
+        }
     }
-}
-
 }
