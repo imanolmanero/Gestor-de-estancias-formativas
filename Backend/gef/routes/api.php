@@ -36,10 +36,10 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::get('/grados', [GradoController::class, 'index']);
     
-    Route::post('/guardarRA', [ResultadoAprendizajeController::class, 'store']);
+    Route::get('/resultados-aprendizaje/{id_grado}', [ResultadoAprendizajeController::class, 'obtenerResultadosPorGrado']);
     Route::get('/asignaturas/{id_grado}', [AsignaturaController::class, 'obtenerAsignaturasporGrado']);  
     Route::post('/guardarCompetencia', [CompetenciaTecnicaController::class, 'store']);
-    
+    Route::post('/guardarRA', [ResultadoAprendizajeController::class, 'store']);
     Route::post('/entregas', [EntregaController::class, 'store']);
     Route::get('/entregas', [EntregaController::class, 'index']);
     Route::get('/cuadernos', [EntregaController::class, 'verCuadernos']);

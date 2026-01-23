@@ -2,7 +2,7 @@
   <div>
     <title>Crear</title>
     <select v-model="tipo">
-      <option value="" disabled selected>¿Qué quieres Agregar?</option>
+      <option value="" disabled selected>¿Qué quieres Crear?</option>
       <option value="empresa">Empresa</option>
       <option value="usuario">Usuario</option>
       <option value="competencia">Competencia</option>
@@ -36,7 +36,7 @@ export default {
       ra: { descripcion: '', grado: '', asignatura: '' },
       grados: [],
       asignaturas: [],
-      competencia: { descripcion: '', id_grado: '' }
+      competencia: { descripcion: '', id_grado: '', resultados_aprendizaje:[]  }
     };
   },
   
@@ -64,7 +64,20 @@ export default {
     async guardarRA() {
       try {
    
-
+        if (!this.ra.descripcion) {
+          alert('Por favor ingresa una descripción');
+          return;
+        }
+        
+        if (!this.ra.grado) {
+          alert('Por favor selecciona un grado');
+          return;
+        }
+        
+        if (!this.ra.asignatura) {
+          alert('Por favor selecciona una asignatura');
+          return;
+        }
         const payload = { 
           descripcion: this.ra.descripcion,
           id_grado: this.ra.grado,
@@ -99,11 +112,22 @@ export default {
     
     async guardarCompetencia() {
       try {
+        if (!this.competencia.descripcion) {
+          alert('Por favor ingresa una descripción');
+          return;
+        }
+        
+        if (!this.competencia.id_grado) {
+          alert('Por favor selecciona un grado');
+          return;
+        }
+        
+      
         await axios.post('http://localhost:8000/api/guardarCompetencia', this.competencia, { 
           headers: { Authorization: `Bearer ${this.token}` } 
         });
         alert('Competencia guardada con éxito');
-        this.competencia = { descripcion: '', id_grado: '' };
+        this.competencia = { descripcion: '', id_grado: '', resultados_aprendizaje: [] };
       } catch (error) { 
         console.error(error); 
       }
