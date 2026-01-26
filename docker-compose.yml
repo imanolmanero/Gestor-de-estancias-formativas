@@ -91,4 +91,5 @@ networks:
 #php artisan migrate:fresh
 #php artisan optimize:clear
 #php artisan storage:link
+#php artisan db:seed
 #En los 2 de arriba cambiar localhost por la ip del servidor
