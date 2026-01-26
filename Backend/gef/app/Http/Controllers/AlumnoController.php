@@ -157,6 +157,18 @@ class AlumnoController extends Controller
                     'nota_competencia_transversal.nota'
                 )
                 ->get();
+
+            // 4. NOTAS DE CUADERNO
+            $cuaderno = DB::table('cuaderno_practicas')
+                ->leftJoin('nota_cuaderno', function ($join) use ($estancia) {
+                    $join->on('cuaderno_practicas.id_cuaderno', '=', 'nota_cuaderno.id_cuaderno')
+                         ->where('cuaderno_practicas.id_estancia', '=', $estancia->id_estancia);
+                })
+                ->select(
+                    'cuaderno_practicas.id_cuaderno',
+                    'nota_cuaderno.nota'
+                )
+                ->get();
         }
 
         return response()->json([
@@ -164,6 +176,7 @@ class AlumnoController extends Controller
             'asignaturas' => $asignaturas,
             'tecnicas' => $tecnicas,
             'transversales' => $transversales,
+            'cuaderno' => $cuaderno,
             'tiene_estancia' => $estancia !== null
         ]);
 
@@ -383,6 +396,57 @@ public function actualizarNotaCentro(Request $request, $idAlumno, $idAsignatura)
         DB::rollBack();
         return response()->json([
             'message' => 'Error al actualizar la nota',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+    
+}
+public function notaCuaderno(Request $request, $idCuaderno)
+{
+    $user = $request->user();
+
+    if (!$user->esTutorCentro()) {
+        return response()->json(['message' => 'No autorizado'], 403);
+    }
+
+    $validatedData = $request->validate([
+        'nota' => 'required|integer|min:0|max:10'
+    ]);
+
+    // Verificar que la estancia pertenece al alumno
+    $cuaderno = DB::table('cuaderno_practicas')
+        ->where('id_cuaderno', $idCuaderno)
+        ->first();
+
+    if (!$cuaderno) {
+        return response()->json([
+            'message' => 'El cuaderno no existe'
+        ], 404);
+    }
+
+    try {
+        
+        // Insertar o actualizar nota del cuaderno
+        DB::table('nota_cuaderno')->updateOrInsert(
+            [
+                'id_cuaderno' => $idCuaderno
+            ],
+            [
+                'id_tutor' => $user->id_usuario,
+                'nota' => $validatedData['nota'],
+                'fecha_evaluacion' => now(),
+                'updated_at' => now(),
+                'created_at' => now()
+            ]
+        );
+
+        DB::commit();
+
+        return response()->json(['message' => 'Nota de cuaderno guardada con éxito']);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'message' => 'Error al guardar la nota del cuaderno',
             'error' => $e->getMessage()
         ], 500);
     }
