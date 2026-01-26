@@ -13,6 +13,24 @@ class UsuarioSeeder extends Seeder
      */
     public function run(): void
     {
+        //Admin
+        User::create([
+            'email' => 'mdiaz@egibide.org',
+            'password_hash' => Hash::make('password123'),
+            'nombre' => 'Maider',
+            'apellidos' => 'Diaz',
+            'telefono' => '123123123',
+            'tipo_usuario' => 'ADMIN'
+        ]);
+        User::create([
+            'email' => 'mnieves@egibide.org',
+            'password_hash' => Hash::make('password123'),
+            'nombre' => 'Maria',
+            'apellidos' => 'Nieves',
+            'telefono' => '123123123',
+            'tipo_usuario' => 'ADMIN'
+        ]);
+
         // Tutores de Centro
         User::create([
             'email' => 'juan.tutor@centro.edu',
