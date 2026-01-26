@@ -90,6 +90,9 @@ export default {
             case "alumno":
                 response = await api.get('/esAlumno');
                 break;
+            case "tutor_empresa":
+                response = await api.get('/esTutorEmpresa')
+                break;
         }
         return response?.data ?? false;
     },

@@ -249,4 +249,9 @@ class UsuarioController extends Controller
             $request->user()->esAdministrador()
         );
     }
+    public function esTutorEmpresa(Request $request){
+        return response()->json(
+            $request->user()->esTutorEmpresa()
+        );
+    }
 }

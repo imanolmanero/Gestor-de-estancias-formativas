@@ -14,8 +14,11 @@ const PonerNotas = defineAsyncComponent(()=>import('./ponerNotas.vue'));
 const vistaActiva = ref(null)
 const alumno = reactive({});
 
-// Estado para tutores
-const esTutor = ref(false);
+// Estado para identificar tipo de usuario
+const esAlumno = ref(false);
+const esTutorEmpresa = ref(false);
+const esTutorCentro = ref(false);
+
 const listaGrados = ref([]);
 const listaAlumnos = ref([]);
 const gradoSeleccionado = ref(null);
@@ -36,14 +39,18 @@ function cambiar(vista){
 
 async function verificarTipoUsuario() {
     try {
-        const esAlumno = await apiService.tipoUsuario('alumno');
-        const esTutorCentro = await apiService.tipoUsuario('tutor_centro');
+        const esAlumnoResponse = await apiService.tipoUsuario('alumno');
+        const esTutorCentroResponse = await apiService.tipoUsuario('tutor_centro');
+        const esTutorEmpResponse = await apiService.tipoUsuario('tutor_empresa');
         
-        esTutor.value = esTutorCentro || !esAlumno;
+        esAlumno.value = esAlumnoResponse;
+        esTutorCentro.value = esTutorCentroResponse;
+        esTutorEmpresa.value = esTutorEmpResponse;
         
-        if (esTutor.value) {
+        // Cargar datos según tipo de usuario
+        if (esTutorCentro.value || esTutorEmpresa.value) {
             await cargarListaGrados();
-        } else {
+        } else if (esAlumno.value) {
             await cargarDatosAlumno();
         }
     } catch (err) {
@@ -75,7 +82,6 @@ async function onGradoChange() {
         listaAlumnos.value = [];
         alumnoSeleccionado.value = null;
         idEstanciaActual.value = null;
-
         Object.keys(alumno).forEach(key => delete alumno[key]);
         return;
     }
@@ -92,7 +98,6 @@ async function onGradoChange() {
         } else {
             alumnoSeleccionado.value = null;
             idEstanciaActual.value = null;
-            // Limpiar datos del alumno
             Object.keys(alumno).forEach(key => delete alumno[key]);
         }
         
@@ -115,7 +120,7 @@ async function cargarDatosAlumno(userId = null) {
             // Cargar alumno específico (para tutores)
             response = await apiService.getAlumno(userId);
         } else {
-            // Cargar datos del usuario autenticado
+            // Cargar datos del usuario autenticado (alumno)
             response = await apiService.getAuthUser();
         }
         
@@ -148,7 +153,6 @@ async function cargarEstanciaAlumno(idAlumno) {
     } catch (err) {
         console.error('Error al cargar estancia del alumno:', err);
         idEstanciaActual.value = null;
-        // No mostramos error al usuario porque es normal que algunos alumnos no tengan estancia
     } finally {
         cargandoEstancia.value = false;
     }
@@ -172,7 +176,7 @@ onMounted(() => {
             {{ error }}
         </div>
 
-        <div v-if="cargando && !esTutor" class="text-center">
+        <div v-if="cargando && esAlumno" class="text-center">
             <div class="spinner-border" role="status">
                 <span class="visually-hidden">Cargando...</span>
             </div>
@@ -181,13 +185,13 @@ onMounted(() => {
 
         <template v-else>
             <div id="principal" class="row" :class="vistaActiva === 'seguimiento' ? 'col-8' : 'col-4'">
-                <div v-if="esTutor" class="col-12 mb-3">
+                <div v-if="esTutorCentro || esTutorEmpresa" class="col-12 mb-3">
                     <div class="mb-3">
                         <label for="selectorGrado" class="form-label">
                             <strong>1. Seleccionar Grado:</strong>
                         </label>
                         <select id="selectorGrado" class="form-select" v-model="gradoSeleccionado" @change="onGradoChange">
-                            <option :value="null"> Seleccione un grado </option>
+                            <option :value="null">Seleccione un grado</option>
                             <option v-for="grado in listaGrados" :key="grado.id_grado" :value="grado.id_grado">
                                 {{ grado.nombre_completo }}
                             </option>
@@ -206,7 +210,7 @@ onMounted(() => {
                         </div>
                         
                         <select v-else id="selectorAlumno" class="form-select" v-model="alumnoSeleccionado" @change="onAlumnoChange" :disabled="listaAlumnos.length === 0">
-                            <option v-if="listaAlumnos.length === 0" :value="null"> No hay alumnos en este grado </option>
+                            <option v-if="listaAlumnos.length === 0" :value="null">No hay alumnos en este grado</option>
                             <option v-for="alum in listaAlumnos" :key="alum.id_usuario" :value="alum.id_usuario">
                                 {{ alum.nombre_completo }}
                             </option>
@@ -219,20 +223,32 @@ onMounted(() => {
                     <Tabla :alumno="alumno"/>
                 </div>
 
-                <div v-else-if="esTutor" class="col-12 text-center text-muted">
+                <div v-else-if="esTutorCentro || esTutorEmpresa" class="col-12 text-center text-muted">
                     <p>Seleccione un grado y un alumno para ver la información</p>
                 </div>
                 
                 <div v-if="alumno.nombre" id="opciones" class="row col mt-3">
-                    <button class="col-5 mb-2" @click="cambiar('calendario')">Ver calendario</button>
-                    <button class="col-5 ms-2 mb-2" @click="cambiar('empresa')">Ver empresa</button>
-                    <button class="col-5" @click="cambiar('notas')">Ver notas</button>
-                    <button class="col-5 ms-2" @click="cambiar('seguimiento')" :disabled="!idEstanciaActual">
-                        Ver seguimiento
-                    </button>
-                    <button class="col-5 mt-2" @click="cambiar('ponerNotas')">Poner notas</button>
+                    <template v-if="esAlumno">
+                        <button class="col-5 mb-2" @click="cambiar('calendario')">Ver calendario</button>
+                        <button class="col-5 ms-2 mb-2" @click="cambiar('empresa')">Ver empresa</button>
+                        <button class="col-5" @click="cambiar('notas')">Ver notas</button>
+                    </template>
+                    <template v-if="esTutorEmpresa">
+                        <button class="col-5 mb-2" @click="cambiar('calendario')">Ver calendario</button>
+                        <button class="col-5 ms-2 mb-2" @click="cambiar('ponerNotas')">Poner Notas</button>
+                        <button class="col-5" @click="cambiar('notas')">Ver notas</button>
+                    </template>
+
+                    <template v-if="esTutorCentro">
+                        <button class="col-5 mb-2" @click="cambiar('calendario')">Ver calendario</button>
+                        <button class="col-5 ms-2 mb-2" @click="cambiar('empresa')">Ver empresa</button>
+                        <button class="col-5" @click="cambiar('notas')">Ver notas</button>
+                        <button class="col-5 ms-2" @click="cambiar('seguimiento')" :disabled="!idEstanciaActual">
+                            Ver seguimiento
+                        </button>
+                    </template>
                     
-                    <div v-if="!idEstanciaActual && alumno.nombre" class="col-12 mt-2">
+                    <div v-if="!idEstanciaActual && alumno.nombre && esTutorCentro" class="col-12 mt-2">
                         <small class="text-muted">
                             * El alumno no tiene una estancia asignada para ver seguimientos
                         </small>
@@ -241,12 +257,12 @@ onMounted(() => {
             </div>
 
             <div id="secundario" class="row" :class="vistaActiva === 'seguimiento' ? 'col-12' : 'col-8'">
-                <Calendario v-if="vistaActiva === 'calendario'" :alumno-id="alumno.id_usuario"/>
-                <Empresa v-if="vistaActiva === 'empresa'" :alumno-id="alumno.id_usuario"/>
-                <Notas v-if="vistaActiva === 'notas'" :id-alumno="alumno.id_usuario"/>
-                <Seguimiento v-if="vistaActiva === 'seguimiento' && idEstanciaActual" 
+                <Calendario v-if="vistaActiva === 'calendario'" :alumno-id="alumno.id_usuario" :es-editable="esTutorCentro"/>
+                <Empresa v-if="vistaActiva === 'empresa'" :alumno-id="alumno.id_usuario" :puede-editar="esTutorCentro"/>
+                <Notas v-if="vistaActiva === 'notas'" :id-alumno="alumno.id_usuario" :puede-modificar="esTutorCentro"/>
+                <Seguimiento v-if="vistaActiva === 'seguimiento' && idEstanciaActual && esTutorCentro" 
                              :id-estancia="idEstanciaActual" />
-                <PonerNotas v-if="vistaActiva === 'ponerNotas'" :idAlumno="alumno.id_usuario" />
+                <PonerNotas v-if="vistaActiva === 'ponerNotas'" :idAlumno="alumno.id_usuario" :es-tutor-empresa="esTutorEmpresa"/>
             </div>
         </template>
     </div>

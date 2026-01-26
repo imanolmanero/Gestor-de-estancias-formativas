@@ -22,7 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
     Route::get('/usuario/me', [UsuarioController::class, 'getAuthUser']);
-    
+    Route::get('/esTutorEmpresa', [UsuarioController::class, 'esTutorEmpresa']);
     Route::get('/esTutorCentro', [UsuarioController::class, 'esTutorCentro']);
     Route::get('/esAlumno', [UsuarioController::class, 'esAlumno']);
     Route::get('esAdmin', [UsuarioController::class, 'esAdmin']);

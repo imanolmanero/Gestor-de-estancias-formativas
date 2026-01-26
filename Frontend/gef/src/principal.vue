@@ -5,47 +5,77 @@ import axios from '@/axios'
 import "./assets/css/nav.css";
 import "./assets/css/main.css";
 import { ref, defineAsyncComponent, onMounted } from 'vue'
+import apiService from '@/services/api.js'
+
 const Alumno = defineAsyncComponent(()=>import('./alumno/alumno.vue'));
 const Crear = defineAsyncComponent(()=>import('./crear/crear.vue'));
 const Cuaderno = defineAsyncComponent(()=>import('./cuaderno/cuaderno.vue'));
 const Sesion = defineAsyncComponent(()=>import('./logout.vue'));
-const vistaActiva = ref(null)
-let esAdmin_v = ref(false)
 
-let token = localStorage.getItem('token')
+const vistaActiva = ref(null)
+
+const esAdmin = ref(false)
+const esAlumno = ref(false)
+const esTutorCentro = ref(false)
+const esTutorEmpresa = ref(false)
+
+const token = localStorage.getItem('token')
 
 function cambiar(vista){
     vistaActiva.value = vistaActiva.value === vista ? null : vista;
 }
-    async function esAdmin(){
-        try{
-            const response = await axios.get('http://localhost:8000/api/esAdmin', {
-                headers: {Authorization: `Bearer ${token}`}
-            });
-           esAdmin_v.value = response.data === 'ADMIN'
-        }catch(error){
-            console.error("Error validando el admin:", error)
+
+async function verificarTipoUsuario() {
+    try {
+        const responseAdmin = await axios.get('http://localhost:8000/api/esAdmin', {
+            headers: {Authorization: `Bearer ${token}`}
+        });
+        esAdmin.value = responseAdmin.data === true;
+
+        // Si no es admin, verificar otros tipos de usuario
+        if (!esAdmin.value) {
+            const esAlumnoResponse = await apiService.tipoUsuario('alumno');
+            const esTutorCentroResponse = await apiService.tipoUsuario('tutor_centro');
+            const esTutorEmpResponse = await apiService.tipoUsuario('tutor_empresa');
+            
+            esAlumno.value = esAlumnoResponse;
+            esTutorCentro.value = esTutorCentroResponse;
+            esTutorEmpresa.value = esTutorEmpResponse;
         }
+    } catch (error) {
+        console.error("Error validando el tipo de usuario:", error)
     }
-    onMounted(() => {
-        esAdmin();
-    });
+}
+
+onMounted(() => {
+    verificarTipoUsuario();
+});
 </script>
+
 <template>
     <body class="container mt-4">
         <nav class="row mb-5 p-3">
-            <h1 class="mb-4">Gestion de estancias formativas</h1>
-            <button class="col-2" @click="cambiar('alumno')">Info de alumno</button>
-            <button v-if="esAdmin_v" class="col-2 ms-3" @click="cambiar('crear')">Crear</button>
-            <button class="col-2 ms-3" @click="cambiar('cuaderno')">Cuaderno</button>
+            <h1 class="mb-4">Gestión de estancias formativas</h1>
+            
+            <button v-if="esAdmin" class="col-2" @click="cambiar('crear')">Crear</button>
+            
+            <button v-if="esAlumno" class="col-2" @click="cambiar('alumno')">Mi información</button>
+            
+            <template v-if="esTutorCentro">
+                <button class="col-2" @click="cambiar('alumno')">Info de alumno</button>
+                <button class="col-2 ms-3" @click="cambiar('cuaderno')">Cuaderno</button>
+            </template>
+            
+            <button v-if="esTutorEmpresa" class="col-2" @click="cambiar('alumno')">Info de alumno</button>
+            
             <button class="col-2 ms-3" @click="cambiar('cerr_sesion')">Cerrar Sesión</button>
         </nav>
+        
         <main class="row" v-if="vistaActiva !== null">
             <Alumno v-if="vistaActiva === 'alumno'"/>
             <Crear v-if="vistaActiva === 'crear'"/>
             <Cuaderno v-if="vistaActiva === 'cuaderno'"/>
             <Sesion v-if="vistaActiva === 'cerr_sesion'"/>
-            
         </main>
     </body>
 </template>
