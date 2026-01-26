@@ -85,6 +85,7 @@ networks:
 #php artisan key:generate
 #php artisan migrate:fresh
 #php artisan optimize:clear
+#php artisan storage:link
 #nano Frontend/gef/src/axios.js
 #nano Frontendgef/src/services/api.js
 #En los 2 de arriba cambiar localhost por la ip del servidor
