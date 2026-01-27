@@ -1,9 +1,11 @@
 ❗ 🔗 Enlace al servidor:  [http://172.20.228.13:5173/](url)
 
 ‼️ Contraseña:
+
 💮 password123
 
 ‼️Usuarios disponibles:
+
 💮 Admins: mnieves@egibide.org, mdiaz@egibide.
 
 💮 Alumno: pedro.jimenez@alumno.edu
