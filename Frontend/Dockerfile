@@ -1,16 +1,24 @@
-FROM node:20
+# ---------- Build ----------
+FROM node:20 AS build
 
 WORKDIR /app
 
-# Instalar dependencias
 COPY gef/package*.json ./
 RUN npm install
 
-# Copiar código
 COPY gef/ .
+RUN npm run build
 
-# Exponer Vite
-EXPOSE 5173
 
-# Arrancar Vite
-CMD ["npm", "run", "dev", "--", "--host"]
+# ---------- Apache ----------
+FROM httpd:2.4
+
+# Limpiar config por defecto
+RUN rm -rf /usr/local/apache2/htdocs/*
+
+# Copiar build de Vite
+COPY --from=build /app/dist /usr/local/apache2/htdocs
+
+EXPOSE 80
+
+CMD ["httpd-foreground"]
